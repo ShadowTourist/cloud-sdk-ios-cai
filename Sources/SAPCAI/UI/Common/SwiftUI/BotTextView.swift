@@ -3,8 +3,6 @@ import SwiftUI
 struct BotTextView: View {
     @EnvironmentObject private var themeManager: ThemeManager
     @Environment(\.horizontalSizeClass) private var hSizeClass
-    @State private var isTruncated: Bool = false
-    @State private var forceFullText: Bool = false
     
     let value: NSAttributedString
     let isMarkdown: Bool
@@ -16,6 +14,11 @@ struct BotTextView: View {
         tv.attributedText = self.value
         let newSize = tv.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
         return newSize
+    }
+    
+    private var markdownWidth: CGFloat {
+        let fixedWidth: CGFloat = self.hSizeClass == .regular ? min(480, self.geometry.size.width) : self.geometry.size.width * 0.8
+        return fixedWidth
     }
     
     private var avatarUrl: String? {
@@ -36,30 +39,13 @@ struct BotTextView: View {
                 AvatarView(imageUrl: avatarUrl!)
             }
             if isMarkdown {
-                MarkdownView(themeManager: themeManager, attributedText: value)
-                    .frame(width: markdownSize.width, height: markdownSize.height, alignment: .leading)
+                TruncableLabel(value: value, width: markdownWidth, lineLimit: lineLimit)
                     .background(roundedBackground(for: themeManager.theme, key: .incomingBubbleColor))
                     .tail(self.themeManager, reversed: true)
             } else {
                 VStack(alignment: .leading) {
-                    TruncableText(
-                        text: Text(value.string),
-                        lineLimit: forceFullText ? nil : lineLimit
-                    ) {
-                        isTruncated = $0
-                    }
-                    .foregroundColor(themeManager.color(for: .incomingTextColor))
-                    if isTruncated && !forceFullText {
-                        Button(Bundle.cai.localizedString(forKey: "View more", value: "View more", table: nil)) {
-                            forceFullText = true
-                        }
-                    }
+                    TruncableText(text: Text(value.string), lineLimit: lineLimit)
                 }
-                .padding(themeManager.value(for: .incomingTextContainerInset,
-                                            type: EdgeInsets.self,
-                                            defaultValue: .all10))
-                .background(roundedBackground(for: themeManager.theme, key: .incomingBubbleColor))
-                .tail(self.themeManager, reversed: true)
             }
         }
     }

@@ -51,6 +51,9 @@ struct MockData {
 
         // markdown text message (bot)
         arr.append(CAIResponseMessageData(text: "# Here you go\n**Then some bold text on a seperate line** and also some regular text and also a link to [google](https://www.google.com) with *italic text*", true, markdown: true))
+        
+        // swiftlint:disable:next line_length
+        arr.append(CAIResponseMessageData(text: "# Here you go\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7**Then some bold text on a seperate line** and also some regular text and also a link to [google](https://www.google.com) with *italic text*", true, markdown: true))
 
         // text message (user)
         arr.append(CAIResponseMessageData(text: "List of products", false))
